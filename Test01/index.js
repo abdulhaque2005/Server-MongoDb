@@ -5,23 +5,18 @@ const app = express();
 app.use(express.json());
 
 mongoose.connect("mongodb+srv://abdulhaq:abdul78@cluster0.hz7ufdx.mongodb.net/TestDb?retryWrites=true&w=majority")
-    .then(() => {
-        console.log("MongoDB Connected");
-
-        app.listen(4000, () => {
-            console.log("Server running on port 4000");
-        });
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+.then(() => {
+    console.log("MongoDB Atlas Connected");
+})
+.catch((err) => {
+    console.log(err);
+});
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-
     email: {
         type: String,
         lowercase: true,
@@ -32,14 +27,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 6
-    },
+    }
 });
 
 const User = mongoose.model("User", userSchema);
 
 app.get("/", (req, res) => {
-    res.status(200).json("Server is running!");
+    res.json({ message: "Server is running" });
 });
+
 app.post("/user", async (req, res) => {
     try {
         const newUser = new User(req.body);
@@ -50,8 +46,6 @@ app.post("/user", async (req, res) => {
     }
 });
 
-
-
 app.post("/users", async (req, res) => {
     try {
         const users = await User.insertMany(req.body);
@@ -60,8 +54,6 @@ app.post("/users", async (req, res) => {
         res.status(500).json(err);
     }
 });
-
-
 
 app.get("/users", async (req, res) => {
     try {
@@ -72,8 +64,6 @@ app.get("/users", async (req, res) => {
     }
 });
 
-
-
 app.get("/users/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -83,13 +73,10 @@ app.get("/users/:id", async (req, res) => {
         }
 
         res.json(user);
-
     } catch (err) {
         res.status(400).json({ message: "Invalid ID" });
     }
 });
-
-
 
 app.put("/users/:id", async (req, res) => {
     try {
@@ -109,7 +96,6 @@ app.put("/users/:id", async (req, res) => {
     }
 });
 
-
 app.delete("/users/:id", async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
@@ -124,7 +110,8 @@ app.delete("/users/:id", async (req, res) => {
     }
 });
 
+const PORT = process.env.PORT || 4000;
 
-app.listen(4000, () => {
-    console.log("Server running on port 4000");
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
