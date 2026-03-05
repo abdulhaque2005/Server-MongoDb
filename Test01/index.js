@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 app.use(express.json());
 
-mongoose.connect("mongodb://localhost:27017/TestDb")
+mongoose.connect("mongodb+srv://abdulhaq:abdul78@cluster0.hz7ufdx.mongodb.net/TestDb?retryWrites=true&w=majority")
     .then(() => {
         console.log("MongoDB Connected");
 
