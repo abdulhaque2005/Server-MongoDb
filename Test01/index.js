@@ -5,28 +5,35 @@ const app = express();
 app.use(express.json());
 
 mongoose.connect("mongodb+srv://abdulhaq:abdul78@cluster0.hz7ufdx.mongodb.net/TestDb?retryWrites=true&w=majority")
-.then(() => {
-    console.log("MongoDB Atlas Connected");
-})
-.catch((err) => {
-    console.log(err);
-});
+    .then(() => {
+        console.log("MongoDB Atlas Connected");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
+        minlength: [2, "Name must be atleast 2 character"],
         required: true
     },
     email: {
         type: String,
         lowercase: true,
-        required: true,
+        required: [true, "Email must be required!"],
         unique: true
     },
     password: {
         type: String,
-        required: true,
-        minlength: 6
+        required: [true, "Password must be required!"],
+        minlength: [6, "Password must be atleast 6 character"],
+    },
+
+    role: {
+        type: String,
+        enum: ["Student", "Mentor", "Admin"],
+        default: "Mentor"
     }
 });
 
@@ -37,6 +44,30 @@ app.get("/", (req, res) => {
 });
 
 app.post("/user", async (req, res) => {
+    const { name, email, password, role } = req.body;
+    if (!name) {
+        return res.status(404).json({
+            message: "Name is required!"
+        });
+    }
+    if (!email) {
+        return res.status(404).json({
+            message: "Name is required!"
+        });
+    }
+
+    if (!password) {
+        return res.status(404).json({
+            message: "password is required!"
+        });
+    }
+    if (!role) {
+        return res.status(404).json({
+            message: "role is required!"
+        });
+    }
+
+
     try {
         const newUser = new User(req.body);
         const savedUser = await newUser.save();
